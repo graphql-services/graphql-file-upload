@@ -12,6 +12,8 @@ version: '2'
 services:
   file-uploader:
     image: graphql/file-upload
+    ports:
+      - 3000:80
     environment:
       # url for sending createFile mutation
       - GRAPHQL_URL: http://api.example.com/graphql
