@@ -39,6 +39,11 @@ export class AppController {
     return ormRes.file;
   }
 
+  @Get('/upload')
+  async uploadInfo() {
+    return 'user POST method to upload file';
+  }
+
   @Get('/:id')
   async getFile(@Param('id') id, @Response() res: express.Response) {
     const meta = await this.appService.getFileStream(id);
