@@ -13,6 +13,7 @@ interface FileType {
   size: number;
   contentType: string;
   url: string;
+  name?: string;
 }
 
 @Injectable()
@@ -39,7 +40,7 @@ export class AppService {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         query: ENV.GRAPHQL_UPLOAD_MUTATION,
-        variables: { input: Object.assign({}, args, file) },
+        variables: { input: Object.assign({}, file, args) },
       }),
     });
 

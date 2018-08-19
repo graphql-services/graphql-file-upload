@@ -39,9 +39,11 @@ export class AppController {
     @Headers('content-type') contentType: string,
   ) {
     let res = null;
+    let name;
     if (contentType.indexOf('multipart/form-data') !== -1) {
       contentType = file.mimetype;
       contentLength = file.size;
+      name = file.originalname;
       res = await this.appService.uploadFileStream(createReadStream(file.path));
     } else {
       res = await this.appService.uploadFileStream(req);
@@ -53,6 +55,7 @@ export class AppController {
         size: contentLength ? parseInt(contentLength, 10) : undefined,
         contentType,
         url: res.url,
+        name,
       },
       query,
     );
