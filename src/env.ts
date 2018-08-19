@@ -7,6 +7,30 @@ interface IENV {
   GRAPHQL_URL: string;
   FILESTORAGE_URL: string;
   HOST_URL: string;
+  GRAPHQL_UPLOAD_MUTATION: string;
+  GRAPHQL_FETCH_QUERY: string;
 }
 
 export const ENV: IENV = process.env as any;
+
+ENV.GRAPHQL_UPLOAD_MUTATION =
+  ENV.GRAPHQL_UPLOAD_MUTATION ||
+  `mutation createFile($input: FileCreateInputType) {
+  createFile(input:$input) {
+      id
+      uid
+      size
+      contentType
+      url
+  }
+}`;
+
+ENV.GRAPHQL_FETCH_QUERY =
+  ENV.GRAPHQL_FETCH_QUERY ||
+  `query file($uid: String) {
+  file(filter: { uid: $uid }) {
+      uid
+      size
+      contentType
+  }
+}`;

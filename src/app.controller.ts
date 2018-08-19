@@ -26,7 +26,7 @@ export class AppController {
   ) {
     const res = await this.appService.uploadFileStream(req);
 
-    await this.appService.saveFile(
+    const ormRes = await this.appService.saveFile(
       {
         uid: res.id,
         size: contentLength ? parseInt(contentLength, 10) : undefined,
@@ -36,13 +36,16 @@ export class AppController {
       query,
     );
 
-    return res;
+    return ormRes.file;
   }
 
   @Get('/:id')
-  async getFile(@Param('id') id, @Response() res) {
-    return 'aaa';
-    // const stream = await this.appService.getFileStream(id);
-    // stream.pipe(res);
+  async getFile(@Param('id') id, @Response() res: express.Response) {
+    const meta = await this.appService.getFileStream(id);
+
+    res.setHeader('content-type', meta.file.contentType);
+    res.setHeader('content-length', meta.file.size);
+
+    meta.stream.pipe(res);
   }
 }

@@ -8,6 +8,13 @@ import { ENV } from 'env';
 
 const storage = new FileStorage(ENV.FILESTORAGE_URL || 's3://adf');
 
+interface FileType {
+  uid: string;
+  size: number;
+  contentType: string;
+  url: string;
+}
+
 @Injectable()
 export class AppService {
   async uploadFileStream(req: any): Promise<{ id: string; url: string }> {
@@ -17,20 +24,21 @@ export class AppService {
     return { id, url };
   }
 
+  private getDataFromGraphQLResponse(response: any): any {
+    const data = response.data;
+    const firstKey = Object.keys(data)[0];
+    return firstKey ? data[firstKey] : null;
+  }
+
   async saveFile(
-    file: {
-      uid: string;
-      size: number;
-      contentType: string;
-      url: string;
-    },
+    file: FileType,
     args?: { [key: string]: string },
-  ): Promise<Response> {
+  ): Promise<{ file: FileType }> {
     const res = await fetch(ENV.GRAPHQL_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        query: `mutation createFile($input: FileCreateInputType) { createFile(input:$input) { id }}`,
+        query: ENV.GRAPHQL_UPLOAD_MUTATION,
         variables: { input: Object.assign({}, args, file) },
       }),
     });
@@ -39,10 +47,27 @@ export class AppService {
       throw new Error(`failed to create file, status code ${res.status}`);
     }
 
-    return res;
+    const json = await res.json();
+    return { file: this.getDataFromGraphQLResponse(json) };
   }
 
-  async getFileStream(id: string): Promise<any> {
-    return storage.getStream(id);
+  async getFileStream(id: string): Promise<{ file: FileType; stream: any }> {
+    const res = await fetch(ENV.GRAPHQL_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        query: ENV.GRAPHQL_FETCH_QUERY,
+        variables: { uid: id },
+      }),
+    });
+
+    if (res.status !== 200) {
+      throw new Error(`failed to fetch file, status code ${res.status}`);
+    }
+
+    const json = await res.json();
+    const file = this.getDataFromGraphQLResponse(json);
+
+    return { stream: await storage.getStream(id), file };
   }
 }

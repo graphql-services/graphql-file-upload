@@ -25,25 +25,31 @@ services:
 
 ## GraphQL connection
 
+### Uploading file
+
 Each time the file is uploaded to `POST /upload` graphql createFile mutation is sent to `GRAPHQL_URL`.
 
 GraphQL mutation has following format:
 
 ```
-# query:
+# you can use your query GRAPHQL_UPLOAD_MUTATION:
 mutation createFile($input: FileCreateInputType) {
     createFile(input:$input) {
         id
+        uid
+        size
+        contentType
+        url
     }
 }
 
 # variables:
 {
     "input": {
-        uid: "abcdefafdsdfs",
-        size: 123, # from request.headers['content-length']
-        contentType: "image/jpg", # from request.headers['content-type']
-        url: "http://files.example.com/abcdefafdsdfs"
+        "uid": "abcdefafdsdfs",
+        "size": 123, # from request.headers['content-length']
+        "contentType": "image/jpg", # from request.headers['content-type']
+        "url": "http://files.example.com/abcdefafdsdfs"
     }
 }
 ```
@@ -60,5 +66,27 @@ You can also add input variables using query string:
         "contentType": "image/jpg", # from request.headers['content-type']
         "url": "http://files.example.com/abcdefafdsdfs"
     }
+}
+```
+
+### Fetching file
+
+Each time the file is fetch from `GET /:id` graphql file query is sent to `GRAPHQL_URL`.
+
+GraphQL query has following format:
+
+```
+# you can use your query GRAPHQL_FETCH_QUERY:
+mutation file($uid: String) {
+    file(filter: { uid: $uid }) {
+        uid
+        size
+        contentType
+    }
+}
+
+# variables:
+{
+    "uid": "abcdefafdsdfs"
 }
 ```
