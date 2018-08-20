@@ -11,6 +11,8 @@ import {
   UseInterceptors,
   FileInterceptor,
   Headers,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import express from 'express';
 import { createReadStream } from 'fs';
@@ -70,11 +72,18 @@ export class AppController {
 
   @Get('/:id')
   async getFile(@Param('id') id, @Response() res: express.Response) {
-    const meta = await this.appService.getFileStream(id);
+    try {
+      const meta = await this.appService.getFileStream(id);
 
-    res.setHeader('content-type', meta.file.contentType);
-    res.setHeader('content-length', meta.file.size);
+      res.setHeader('content-type', meta.file.contentType);
+      res.setHeader('content-length', meta.file.size);
 
-    meta.stream.pipe(res);
+      meta.stream.pipe(res);
+    } catch (err) {
+      if (err.code === 'NoSuchKey') {
+        throw new HttpException('NotFound', HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
