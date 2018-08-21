@@ -31,6 +31,11 @@ const multerStorage = multer.diskStorage({
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get('/healthcheck')
+  async healthcheck(): Promise<string> {
+    return 'OK';
+  }
+
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', { storage: multerStorage }))
   async uploadFile(
