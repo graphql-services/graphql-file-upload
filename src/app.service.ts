@@ -1,5 +1,5 @@
-import fetch, { Response } from 'node-fetch';
-import { Injectable } from '@nestjs/common';
+import fetch from 'node-fetch';
+import { Injectable, HttpException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import * as FileStorage from 'file-storage';
 import { resolve } from 'url';
@@ -45,7 +45,11 @@ export class AppService {
     });
 
     if (res.status !== 200) {
-      throw new Error(`failed to create file, status code ${res.status}`);
+      const text = await res.text();
+      throw new HttpException(
+        `failed to create file, response: ${text}`,
+        res.status,
+      );
     }
 
     const json = await res.json();

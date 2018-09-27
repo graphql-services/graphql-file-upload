@@ -33,7 +33,7 @@ GraphQL mutation has following format:
 
 ```
 # you can use your query GRAPHQL_UPLOAD_MUTATION:
-mutation createFile($input: FileCreateInputType) {
+mutation createFile($input: FileRawCreateInput!) {
     createFile(input:$input) {
         id
         uid
@@ -77,7 +77,7 @@ GraphQL query has following format:
 
 ```
 # you can use your query GRAPHQL_FETCH_QUERY:
-mutation file($uid: String) {
+mutation file($uid: ID) {
     file(filter: { uid: $uid }) {
         uid
         size

@@ -15,7 +15,7 @@ export const ENV: IENV = process.env as any;
 
 ENV.GRAPHQL_UPLOAD_MUTATION =
   ENV.GRAPHQL_UPLOAD_MUTATION ||
-  `mutation createFile($input: FileCreateInputType) {
+  `mutation createFile($input: FileRawCreateInput!) {
   createFile(input:$input) {
       id
       uid
@@ -27,8 +27,9 @@ ENV.GRAPHQL_UPLOAD_MUTATION =
 
 ENV.GRAPHQL_FETCH_QUERY =
   ENV.GRAPHQL_FETCH_QUERY ||
-  `query file($uid: String) {
+  `query file($uid: ID) {
   file(filter: { uid: $uid }) {
+      id
       uid
       size
       contentType
