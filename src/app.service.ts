@@ -67,7 +67,11 @@ export class AppService {
     });
 
     if (res.status !== 200) {
-      throw new Error(`failed to fetch file, status code ${res.status}`);
+      const text = await res.text();
+      throw new HttpException(
+        `failed to fetch file, response: ${text}`,
+        res.status,
+      );
     }
 
     const json = await res.json();

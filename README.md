@@ -77,7 +77,7 @@ GraphQL query has following format:
 
 ```
 # you can use your query GRAPHQL_FETCH_QUERY:
-mutation file($uid: ID) {
+query file($uid: ID) {
     file(filter: { uid: $uid }) {
         uid
         size
