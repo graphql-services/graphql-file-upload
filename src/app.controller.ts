@@ -44,6 +44,7 @@ export class AppController {
     @Query() query: { [key: string]: any },
     @Headers('content-length') contentLength: string,
     @Headers('content-type') contentType: string,
+    @Headers('authorization') authorizationHeader?: string,
   ) {
     let res = null;
     let name;
@@ -65,6 +66,7 @@ export class AppController {
         name,
       },
       query,
+      { authorization: authorizationHeader },
     );
 
     return ormRes.file;

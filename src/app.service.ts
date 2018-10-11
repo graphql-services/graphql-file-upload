@@ -34,10 +34,11 @@ export class AppService {
   async saveFile(
     file: FileType,
     args?: { [key: string]: string },
+    headers?: { [key: string]: string },
   ): Promise<{ file: FileType }> {
     const res = await fetch(ENV.GRAPHQL_URL, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { ...(headers || {}), 'content-type': 'application/json' },
       body: JSON.stringify({
         query: ENV.GRAPHQL_UPLOAD_MUTATION,
         variables: { input: Object.assign({}, file, args) },
