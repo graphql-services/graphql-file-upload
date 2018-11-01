@@ -27,6 +27,9 @@ export class AppService {
 
   private getDataFromGraphQLResponse(response: any): any {
     const data = response.data;
+    if (!data) {
+      return null;
+    }
     const firstKey = Object.keys(data)[0];
     return firstKey ? data[firstKey] : null;
   }
