@@ -78,9 +78,13 @@ export class AppController {
   }
 
   @Get('/:id')
-  async getFile(@Param('id') id, @Response() res: express.Response) {
+  async getFile(
+    @Param('id') id,
+    @Response() res: express.Response,
+    @Headers('authorization') authorization?: string,
+  ) {
     try {
-      const meta = await this.appService.getFileStream(id);
+      const meta = await this.appService.getFileStream(id, { authorization });
 
       res.setHeader('content-type', meta.file.contentType);
       res.setHeader('content-length', meta.file.size);
