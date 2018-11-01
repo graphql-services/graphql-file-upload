@@ -15,7 +15,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import express from 'express';
-import { createReadStream } from 'fs';
+import { createReadStream, access } from 'fs';
 import * as multer from 'multer';
 import { v4 } from 'uuid';
 
@@ -82,8 +82,13 @@ export class AppController {
     @Param('id') id,
     @Response() res: express.Response,
     @Headers('authorization') authorization?: string,
+    @Query('access_token') accessToken?: string,
   ) {
     try {
+      if (accessToken) {
+        authorization = `Bearer ${accessToken}`;
+      }
+
       const meta = await this.appService.getFileStream(id, { authorization });
 
       res.setHeader('content-type', meta.file.contentType);
