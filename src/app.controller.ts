@@ -20,6 +20,7 @@ import * as multer from 'multer';
 import { v4 } from 'uuid';
 
 import { AppService } from './app.service';
+import { log } from 'logger';
 
 const multerStorage = multer.diskStorage({
   filename(req, file, cb) {
@@ -52,22 +53,27 @@ export class AppController {
       contentType = file.mimetype;
       contentLength = file.size;
       name = file.originalname;
+      log(`starting upload from filepath ${file.path}`);
       res = await this.appService.uploadFileStream(createReadStream(file.path));
+      log(`finished upload from filepath ${file.path}`);
     } else {
+      log(`starting upload from request stream`);
       res = await this.appService.uploadFileStream(req);
+      log(`finished upload from request stream`);
     }
 
-    const ormRes = await this.appService.saveFile(
-      {
-        uid: res.id,
-        size: contentLength ? parseInt(contentLength, 10) : undefined,
-        contentType,
-        url: res.url,
-        name,
-      },
-      query,
-      { authorization: authorizationHeader },
-    );
+    const data = {
+      uid: res.id,
+      size: contentLength ? parseInt(contentLength, 10) : undefined,
+      contentType,
+      url: res.url,
+      name,
+    };
+    log(`saving file, input:`, JSON.stringify(data));
+    const ormRes = await this.appService.saveFile(data, query, {
+      authorization: authorizationHeader,
+    });
+    log(`saved file, result:`, JSON.stringify(ormRes.file));
 
     return ormRes.file;
   }
