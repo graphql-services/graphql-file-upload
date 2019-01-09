@@ -1,5 +1,7 @@
 # graphql-file-upload
 
+[![Build Status](https://travis-ci.org/graphql-services/graphql-file-upload.svg?branch=master)](https://travis-ci.org/graphql-services/graphql-file-upload)
+
 File upload microservice with GraphQL connector.
 
 Files are uploaded using `POST /upload` as binary and downloaded using `GET /:id`.
